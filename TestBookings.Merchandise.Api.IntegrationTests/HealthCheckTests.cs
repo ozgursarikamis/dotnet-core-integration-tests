@@ -21,7 +21,9 @@ namespace TestBookings.Merchandise.Api.IntegrationTests
         {
             var response = await HttpClient.GetAsync("/healthcheck");
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response.EnsureSuccessStatusCode();
+
+            //Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }
