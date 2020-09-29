@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -45,12 +46,22 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
         [Fact]
         public async Task GetAll_ReturnsExpectedJson()
         {
+            var expected = new List<string>
+            {
+                "Accessories",
+                "Bags",
+                "Balls",
+                "Clothing",
+                "Rackets"
+            };
+
             var responseStream = await HttpClient.GetStreamAsync("api/categories");
             var model = await JsonSerializer
                 .DeserializeAsync<ExpectedCategoriesModel>(responseStream,
                     new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
             
             Assert.NotNull(model?.AllowedCategories);
+            Assert.Equal(expected.OrderBy(x => x), model.AllowedCategories.OrderBy(x => x));
         }
     }
 }
