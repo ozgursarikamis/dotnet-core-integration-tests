@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -67,6 +68,24 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
                 .DeserializeAsync<ExpectedCategoriesModel>(responseStream,
                     new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
             
+            Assert.NotNull(model?.AllowedCategories);
+            Assert.Equal(expected.OrderBy(x => x), model.AllowedCategories.OrderBy(x => x));
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsExpectedResponse()
+        {
+            var expected = new List<string>
+            {
+                "Accessories",
+                "Bags",
+                "Balls",
+                "Clothing",
+                "Rackets"
+            };
+
+            var model = await HttpClient.GetFromJsonAsync<ExpectedCategoriesModel>("");
+
             Assert.NotNull(model?.AllowedCategories);
             Assert.Equal(expected.OrderBy(x => x), model.AllowedCategories.OrderBy(x => x));
         }
