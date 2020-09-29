@@ -38,5 +38,12 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
             Assert.NotNull(response.Content);
             Assert.True(response.Content.Headers.ContentLength > 0);
         }
+
+        [Fact]
+        public async Task GetAll_ReturnsExpectedJson()
+        {
+            var response = await HttpClient.GetStringAsync("api/categories");
+            Assert.Equal("{\"allowedCategories\":[\"Accessories\",\"Bags\",\"Balls\",\"Clothing\",\"Rackets\"]}", response);
+        }
     }
 }
