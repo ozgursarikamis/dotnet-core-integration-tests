@@ -89,5 +89,15 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
             Assert.NotNull(model?.AllowedCategories);
             Assert.Equal(expected.OrderBy(x => x), model.AllowedCategories.OrderBy(x => x));
         }
+
+        [Fact]
+        public async Task GetAll_SetsExpectedCacheControlHeader()
+        {
+            var response = await HttpClient.GetAsync("");
+            var header = response.Headers.CacheControl;
+
+            Assert.True(header.MaxAge.HasValue);
+            Assert.Equal(TimeSpan.FromMinutes(5), header.MaxAge);
+        }
     }
 }
