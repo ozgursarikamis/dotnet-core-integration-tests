@@ -99,6 +99,22 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
             };
         }
 
+        [Fact]
+        public async Task Post_WithExistingProductId_ReturnsConflict_WithExpectedLocation()
+        {
+            var id = _factory.FakeCloudDatabase.Products.First().Id;
+            var content = GetValidProductJsonContent(id);
+
+            var response = await _client.PostAsync("", content);
+
+            Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+            Assert.Equal($"http://localhost/api/products/{id}", response.Headers.Location.ToString().ToLower());
+        }
+        private static JsonContent GetValidProductJsonContent(Guid? id = null)
+        {
+            return JsonContent.Create(GetValidProductInputModel(id));
+        }
+
         public static IEnumerable<object[]> GetInvalidInputs()
         {
             return GetInvalidInputsAndProblemDetailsErrorValidator().Select(x => new[] { x[0] });
