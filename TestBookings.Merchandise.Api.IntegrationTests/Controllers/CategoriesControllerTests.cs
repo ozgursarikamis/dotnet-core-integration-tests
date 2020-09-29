@@ -1,7 +1,10 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using TennisBookings.Merchandise.Api;
+using TestBookings.Merchandise.Api.IntegrationTests.Models;
 using Xunit;
 
 namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
@@ -42,8 +45,12 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
         [Fact]
         public async Task GetAll_ReturnsExpectedJson()
         {
-            var response = await HttpClient.GetStringAsync("api/categories");
-            Assert.Equal("{\"allowedCategories\":[\"Accessories\",\"Bags\",\"Balls\",\"Clothing\",\"Rackets\"]}", response);
+            var responseStream = await HttpClient.GetStreamAsync("api/categories");
+            var model = await JsonSerializer
+                .DeserializeAsync<ExpectedCategoriesModel>(responseStream,
+                    new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
+            
+            Assert.NotNull(model?.AllowedCategories);
         }
     }
 }
