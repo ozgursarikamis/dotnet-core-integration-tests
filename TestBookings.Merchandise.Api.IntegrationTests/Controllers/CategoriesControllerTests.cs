@@ -23,5 +23,20 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
             var response = await HttpClient.GetAsync("/api/categories");
             response.EnsureSuccessStatusCode();
         }
+
+        [Fact]
+        public async Task GetAll_ReturnsExpectedMediaType()
+        {
+            var response = await HttpClient.GetAsync("/api/categories");
+            Assert.Equal("application/json", response.Content.Headers.ContentType.MediaType);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsContent()
+        {
+            var response = await HttpClient.GetAsync("api/categories");
+            Assert.NotNull(response.Content);
+            Assert.True(response.Content.Headers.ContentLength > 0);
+        }
     }
 }
