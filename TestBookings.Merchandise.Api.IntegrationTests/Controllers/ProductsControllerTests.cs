@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using TennisBookings.Merchandise.Api;
 using TennisBookings.Merchandise.Api.Data;
 using TestBookings.Merchandise.Api.IntegrationTests.Models;
@@ -48,6 +49,16 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
         {
             var productInputModel = GetValidProductInputModel().CloneWith(m => m.Name = null);
             var response = await _client.PostAsJsonAsync("", productInputModel);
+
+            var problemDetails = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+            Assert.Collection(problemDetails.Errors, kvp =>
+            {
+                var (key, value) = kvp;
+                Assert.Equal("Name", key);
+
+                var error = Assert.Single(value);
+                Assert.Equal("The Name field is required.", error);
+            });
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
