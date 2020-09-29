@@ -8,7 +8,8 @@ namespace TennisBookings.Merchandise.Api.Controllers
         [HttpGet("total")]
         public IActionResult GetStockTotal()
         {
-            return Ok("{\"stockItemTotal:\":100}");
+            //return Ok("{\"stockItemTotal:\":100}"); // Generates text/plain, not application/json
+            return new JsonResult("{\"stockItemTotal:\":100}");
         } 
     }
 }
