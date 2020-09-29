@@ -15,11 +15,11 @@ using Xunit;
 
 namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
 {
-    public class ProductsControllerTests : IClassFixture<WebApplicationFactory<Startup>>
+    public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory<Startup>>
     {
         private readonly HttpClient _client;
-        private readonly WebApplicationFactory<Startup> _factory;
-        public ProductsControllerTests(WebApplicationFactory<Startup> factory)
+        private readonly CustomWebApplicationFactory<Startup> _factory;
+        public ProductsControllerTests(CustomWebApplicationFactory<Startup> factory)
         {
             factory.ClientOptions.BaseAddress = new Uri("http://localhost/api/products/");
 
@@ -29,52 +29,21 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
         [Fact]
         public async Task GetAll_ReturnsExpectedArrayOfProducts()
         {
-            var cloudDatabase = new FakeCloudDatabase(new[]
-            {
-                new ProductDto { StockCount = 200 },
-                new ProductDto { StockCount = 500 },
-                new ProductDto { StockCount = 300 }
-            });
-
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    services.AddSingleton<ICloudDatabase>(cloudDatabase);
-                });
-            }).CreateClient();
-
-            var products = await client.GetFromJsonAsync<ExpectedProductModel[]>("");
+            _factory.FakeCloudDatabase.ResetDefaultProducts(useCustomIfAvailable: false);
+            var products = await _client.GetFromJsonAsync<ExpectedProductModel[]>("");
 
             Assert.NotNull(products);
-            Assert.Equal(3, products.Count());
+            Assert.Equal(_factory.FakeCloudDatabase.Products.Count, products.Length);
         }
 
         [Fact]
         public async Task Get_ReturnsExpectedProduct()
         {
-            var expectedId = Guid.NewGuid();
-
-            var cloudDatabase = new FakeCloudDatabase(new[]
-            {
-                new ProductDto { Id = expectedId, Name = "EXPECTED" },
-                new ProductDto { Id = Guid.NewGuid(), Name = "NOT_EXPECTED_1" },
-                new ProductDto { Id = Guid.NewGuid(), Name = "NOT_EXPECTED_2" }
-            });
-
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    services.AddSingleton<ICloudDatabase>(cloudDatabase);
-                });
-            }).CreateClient();
-
-            var product = await client.GetFromJsonAsync<ExpectedProductModel>($"{expectedId}");
+            var firstProduct = _factory.FakeCloudDatabase.Products.First();
+            var product = await _client.GetFromJsonAsync<ExpectedProductModel>($"{firstProduct.Id}");
 
             Assert.NotNull(product);
-            Assert.Equal("EXPECTED", product.Name);
+            Assert.Equal(firstProduct.Name, product.Name);
         }
-
     }
 }
