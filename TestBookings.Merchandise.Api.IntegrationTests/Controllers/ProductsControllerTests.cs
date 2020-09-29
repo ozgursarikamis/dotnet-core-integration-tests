@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
 using TennisBookings.Merchandise.Api;
-using TennisBookings.Merchandise.Api.Data.Dto;
-using TennisBookings.Merchandise.Api.External.Database;
-using TestBookings.Merchandise.Api.IntegrationTests.Fakes;
+using TennisBookings.Merchandise.Api.Data;
 using TestBookings.Merchandise.Api.IntegrationTests.Models;
 using Xunit;
 
@@ -44,6 +41,28 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
 
             Assert.NotNull(product);
             Assert.Equal(firstProduct.Name, product.Name);
+        }
+
+        [Fact]
+        public async Task Post_WithoutName_ReturnsBadRequest()
+        {
+            var productInputModel = GetValidProductInputModel().CloneWith(m => m.Name = null);
+            var response = await _client.PostAsJsonAsync("", productInputModel);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        private static TestProductInputModel GetValidProductInputModel(Guid? id = null)
+        {
+            return new TestProductInputModel
+            {
+                Id = id is object ? id.Value.ToString() : Guid.NewGuid().ToString(),
+                Name = "Some Product",
+                Description = "This is a description",
+                Category = new CategoryProvider().AllowedCategories().First(),
+                InternalReference = "ABC123",
+                Price = 4.00m
+            };
         }
     }
 }
