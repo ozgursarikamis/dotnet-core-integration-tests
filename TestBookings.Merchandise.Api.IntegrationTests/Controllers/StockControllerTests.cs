@@ -23,5 +23,12 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
             var response = await Client.GetAsync("total");
             response.EnsureSuccessStatusCode();
         }
+
+        [Fact]
+        public async Task GetStockTotal_ReturnsExpectedJsonContentString()
+        {
+            var response = await Client.GetStringAsync("total");
+            Assert.Equal("{\"stockItemTotal:\":100}", response);
+        }
     }
 }
