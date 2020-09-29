@@ -19,8 +19,13 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Controllers
 
         public CategoriesControllerTests(WebApplicationFactory<Startup> factory)
         {
-            var baseAddress = new Uri("http://localhost/api/categories");
-            HttpClient = factory.CreateDefaultClient(baseAddress);
+            //var baseAddress = new Uri("http://localhost/api/categories");
+            //HttpClient = factory.CreateDefaultClient(baseAddress);
+
+            HttpClient = factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                BaseAddress = new Uri("http://localhost/api/categories")
+            });
         }
 
         [Fact]
