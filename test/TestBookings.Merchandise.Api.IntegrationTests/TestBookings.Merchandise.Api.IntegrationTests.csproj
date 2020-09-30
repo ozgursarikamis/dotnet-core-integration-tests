@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\TennisBookings.Merchandise.Api\TennisBookings.Merchandise.Api.csproj" />
+    <ProjectReference Include="..\..\src\TennisBookings.Merchandise.Api\TennisBookings.Merchandise.Api.csproj" />
   </ItemGroup>
 
 </Project>
