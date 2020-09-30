@@ -10,7 +10,8 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Fakes
     public class FakeCloudDatabase : ICloudDatabase
     {
         public List<ProductDto> Products { get; set; }
-        private IReadOnlyCollection<ProductDto> _customDefaultProducts;
+        private IReadOnlyCollection<ProductDto> _customDefaultProducts; 
+        public bool ShouldThrow { get; set; }
 
         public FakeCloudDatabase(IReadOnlyCollection<ProductDto> products = null)
         {
@@ -31,8 +32,12 @@ namespace TestBookings.Merchandise.Api.IntegrationTests.Fakes
 
         public Task<IReadOnlyCollection<ProductDto>> ScanAsync()
         {
+            if (ShouldThrow)
+                throw new Exception("Test Exception");
+
             return Task.FromResult(Products as IReadOnlyCollection<ProductDto>);
         }
+
 
         public void ReplaceCustomProducts(IReadOnlyCollection<ProductDto> products)
         {
